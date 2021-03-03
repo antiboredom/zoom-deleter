@@ -14,23 +14,24 @@ if [ ! -e "$GOPATH/bin/2goarray" ]; then
     fi
 fi
 
-if [ -z "$1" ]; then
-    echo Please specify a PNG file
-    exit
-fi
-
-if [ ! -f "$1" ]; then
-    echo $1 is not a valid file
-    exit
-fi    
-
 OUTPUT=iconunix.go
 echo Generating $OUTPUT
 echo "//+build linux darwin" > $OUTPUT
 echo >> $OUTPUT
-cat "$1" | $GOPATH/bin/2goarray Data icon >> $OUTPUT
+cat icon.png | $GOPATH/bin/2goarray Data icon >> $OUTPUT
 if [ $? -ne 0 ]; then
     echo Failure generating $OUTPUT
     exit
 fi
+
+OUTPUT=iconwin.go
+echo Generating $OUTPUT
+echo "//+build windows" > $OUTPUT
+echo >> $OUTPUT
+cat icon.ico | $GOPATH/bin/2goarray Data icon >> $OUTPUT
+if [ $? -ne 0 ]; then
+    echo Failure generating $OUTPUT
+    exit
+fi
+
 echo Finished
