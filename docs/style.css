@@ -1,0 +1,33 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: auto 1fr;
+  margin: 0;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+  grid-gap: 40px;
+  padding: 80px;
+}
+
+h1 {
+  font-size: 100px;
+  margin: 0;
+}
+
+img {
+  display: block;
+  height: 100%;
+  margin: auto;
+}
+
+p {
+  font-size: 30px;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}

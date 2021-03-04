@@ -1,1 +1,6 @@
 .DS_Store
+sign_and_notarize.sh
+*.zip
+*.app
+*.exe
+zoom_deleter

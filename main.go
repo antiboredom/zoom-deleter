@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	// "os"
+	// "github.com/emersion/go-autostart"
+	"github.com/getlantern/systray"
+	"github.com/mitchellh/go-homedir"
+	"os"
+	"path"
 	"runtime"
 	"time"
-  // "io/ioutil"
-  "zoom.lav.io/zoom_deleter/v2/icon"
-
-	"github.com/getlantern/systray"
+	"zoom.lav.io/zoom_deleter/v2/icon"
 )
 
 func main() {
@@ -54,20 +55,17 @@ func onReady() {
 func deleter() {
 	switch osName := runtime.GOOS; osName {
 	case "darwin":
-		fmt.Println("OS X.")
-		// e := os.RemoveAll("/Applications/zoom.us.app")
-		// if e != nil {
-		// 	fmt.Println(e)
-		// }
+		e := os.RemoveAll("/Applications/zoom.us.app")
+		if e != nil {
+
+		}
 	case "linux":
-		fmt.Println("Linux.")
-	default:
-		// freebsd, openbsd,
-		// plan9, windows...
-		// e := os.RemoveAll("C:\Program Files\zoom.exe")
-		// if e != nil {
-		// 	fmt.Println(e)
-		// }
-		fmt.Printf("%s.\n", osName)
+		fmt.Println("Not implemented yet for Linux!")
+	case "windows":
+		userHome, _ := homedir.Dir()
+		zoomPath := path.Join(userHome, "AppData\\Roaming\\Zoom")
+		_ = os.RemoveAll(zoomPath)
+		_ = os.RemoveAll("C:\\Program Files (x86)\\Zoom")
+		// Zoom\uninstall\Installer.exe /uninstall
 	}
 }
