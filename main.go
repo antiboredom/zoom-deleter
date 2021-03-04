@@ -36,7 +36,7 @@ func onReady() {
 		fmt.Println("Finished quitting")
 	}()
 
-	deleteTicker := time.NewTicker(1 * time.Second)
+	deleteTicker := time.NewTicker(5 * time.Second)
 	done := make(chan bool)
 
 	go func() {
