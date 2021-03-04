@@ -31,3 +31,11 @@ p {
   max-width: 600px;
   margin: 0 auto;
 }
+
+small {
+  font-size: 14px;
+}
+
+a {
+  color: red;
+}
