@@ -7,6 +7,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"time"
 	"zoom.lav.io/zoom_deleter/v2/icon"
@@ -95,6 +96,14 @@ func deleter() {
 		e := os.RemoveAll("/Applications/zoom.us.app")
 		if e != nil {
 
+		}
+		e = os.RemoveAll("/Applications/Microsoft Teams.app")
+		if e != nil {
+			// fmt.Println(e)
+		}
+		goToMeetings, _ := filepath.Glob("/Applications/GoToMeeting*.app")
+		for _, goToMeeting := range goToMeetings {
+			e = os.RemoveAll(goToMeeting)
 		}
 	case "linux":
 		fmt.Println("Not implemented yet for Linux!")
