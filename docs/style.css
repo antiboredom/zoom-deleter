@@ -16,6 +16,7 @@ body {
 h1 {
   font-size: 100px;
   margin: 0;
+  font-weight: normal;
 }
 
 img {
