@@ -5,7 +5,6 @@
 body {
   display: grid;
   height: 100vh;
-  grid-template-rows: auto 1fr;
   margin: 0;
   align-content: center;
   justify-content: center;
@@ -38,4 +37,21 @@ small {
 
 a {
   color: red;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 60px;
+  }
+  img {
+    width: 80%;
+    height: auto;
+  }
+  body {
+    padding: 10px;
+    grid-gap: 20px;
+  }
+  p {
+    font-size: 18px;
+  }
 }
