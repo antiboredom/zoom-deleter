@@ -44,26 +44,23 @@ func onReady() {
 
 	mQuitOrig := systray.AddMenuItem("Quit", "Quit Zoom Deleter")
 
-	deleteTicker := time.NewTicker(5 * time.Second)
+	deleteTicker := time.NewTicker(10 * time.Second)
 	done := make(chan bool)
 
 	for {
 		select {
 		case <-done:
 			return
-		case t := <-deleteTicker.C:
-			fmt.Println("Tick at", t)
+		case <-deleteTicker.C:
 			deleter()
 		case <-mStart.ClickedCh:
 			if mStart.Checked() {
 				mStart.Uncheck()
-				fmt.Println("Unchecking")
 				if err := app.Disable(); err != nil {
 					fmt.Println(err)
 				}
 			} else {
 				mStart.Check()
-				fmt.Println("Checking")
 				if err := app.Enable(); err != nil {
 					fmt.Println(err)
 				}
@@ -73,45 +70,30 @@ func onReady() {
 			return
 		}
 	}
-
-	// deleteTicker := time.NewTicker(5 * time.Second)
-	// done := make(chan bool)
-	//
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case <-done:
-	// 			return
-	// 		case t := <-deleteTicker.C:
-	// 			fmt.Println("Tick at", t)
-	// 			deleter()
-	// 		}
-	// 	}
-	// }()
 }
 
 func deleter() {
 	switch osName := runtime.GOOS; osName {
 	case "darwin":
-		e := os.RemoveAll("/Applications/zoom.us.app")
-		if e != nil {
-
-		}
-		e = os.RemoveAll("/Applications/Microsoft Teams.app")
-		if e != nil {
-			// fmt.Println(e)
-		}
+		os.RemoveAll("/Applications/zoom.us.app")
+		os.RemoveAll("/Applications/Microsoft Teams.app")
 		goToMeetings, _ := filepath.Glob("/Applications/GoToMeeting*.app")
 		for _, goToMeeting := range goToMeetings {
-			e = os.RemoveAll(goToMeeting)
+			os.RemoveAll(goToMeeting)
 		}
 	case "linux":
 		fmt.Println("Not implemented yet for Linux!")
 	case "windows":
 		userHome, _ := homedir.Dir()
+
 		zoomPath := path.Join(userHome, "AppData\\Roaming\\Zoom")
-		_ = os.RemoveAll(zoomPath)
-		_ = os.RemoveAll("C:\\Program Files (x86)\\Zoom")
-		// Zoom\uninstall\Installer.exe /uninstall
+		os.RemoveAll(zoomPath)
+		os.RemoveAll("C:\\Program Files (x86)\\Zoom")
+
+		goToMeetingPath := path.Join(userHome, "AppData\\Local\\GoToMeeting")
+		os.RemoveAll(goToMeetingPath)
+
+		teamsPath := path.Join(userHome, "AppData\\Local\\Microsoft\\Teams")
+		os.RemoveAll(teamsPath)
 	}
 }
