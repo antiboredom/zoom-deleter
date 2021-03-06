@@ -11,6 +11,8 @@ body {
   text-align: center;
   grid-gap: 40px;
   padding: 80px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 100%;
 }
 
 h1 {
@@ -29,7 +31,7 @@ p {
   font-size: 30px;
   margin: 0;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 20px auto;
 }
 
 small {
@@ -41,6 +43,9 @@ a {
 }
 
 @media (max-width: 768px) {
+  body {
+    display: block;
+  }
   h1 {
     font-size: 60px;
   }
@@ -55,4 +60,16 @@ a {
   p {
     font-size: 18px;
   }
+}
+
+@media not all and (min-resolution:.001dpcm) { 
+     @supports (-webkit-appearance:none) {
+          img {
+            max-width: 500px;
+            height: auto;
+          }
+          body {
+            display: block;
+          }
+     }
 }
