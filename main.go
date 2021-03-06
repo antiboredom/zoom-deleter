@@ -13,8 +13,6 @@ import (
 	"zoom.lav.io/zoom_deleter/v2/icon"
 )
 
-//os.Executable()
-
 func main() {
 	onExit := func() {
 	}
@@ -33,8 +31,13 @@ func onReady() {
 	systray.SetIcon(icon.Data)
 	// systray.SetTitle("Zoom Deleter")
 	systray.SetTooltip("Zoom Deleter")
-	mInfo := systray.AddMenuItem("Status: Active", "Status: Active")
+	mInfo := systray.AddMenuItem("Zoom Deleter: Active", "Zoom Deleter Active")
 	mInfo.Disable()
+
+	mTeams := systray.AddMenuItemCheckbox("Also Delete Microsoft Teams", "Also Delete Microsoft Teams", true)
+	mGoTo := systray.AddMenuItemCheckbox("Also Delete GoToMeeting", "Also Delete GoToMeeting", true)
+
+	systray.AddSeparator()
 
 	runningOnStart := app.IsEnabled()
 	runningMessage := "Run At Start"
@@ -64,6 +67,18 @@ func onReady() {
 				if err := app.Enable(); err != nil {
 					fmt.Println(err)
 				}
+			}
+		case <-mGoTo.ClickedCh:
+			if mGoTo.Checked() {
+				mGoTo.Uncheck()
+			} else {
+				mGoTo.Check()
+			}
+		case <-mTeams.ClickedCh:
+			if mTeams.Checked() {
+				mTeams.Uncheck()
+			} else {
+				mTeams.Check()
 			}
 		case <-mQuitOrig.ClickedCh:
 			systray.Quit()
