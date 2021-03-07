@@ -161,6 +161,7 @@ func deleter(config Config) {
 
 		if config.GoToMeeting {
 			goToMeetingPath := filepath.Join(userHome, "AppData\\Local\\GoToMeeting")
+      os.Chmod(goToMeetingPath, 0600)
 			os.RemoveAll(goToMeetingPath)
 		}
 
