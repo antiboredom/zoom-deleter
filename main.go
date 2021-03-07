@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/emersion/go-autostart"
 	"github.com/getlantern/systray"
 	"github.com/mitchellh/go-homedir"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -13,11 +15,49 @@ import (
 	"zoom.lav.io/zoom_deleter/v2/icon"
 )
 
+type Config struct {
+	GoToMeeting bool
+	Teams       bool
+}
+
 func main() {
 	onExit := func() {
 	}
 
 	systray.Run(onReady, onExit)
+}
+
+func LoadConfiguration(file string) Config {
+	var config Config
+	configFile, _ := ioutil.ReadFile(file)
+	err := json.Unmarshal(configFile, &config)
+	if err != nil {
+	}
+	return config
+}
+
+func SaveConfiguration(file string, config Config) {
+	data, err := json.Marshal(config)
+  if err != nil {
+    fmt.Println(err);
+  }
+	err = ioutil.WriteFile(file, data, 0644)
+  if err != nil {
+    fmt.Println(err)
+  }
+}
+
+func GetConfigPath() string {
+	userHome, _ := homedir.Dir()
+	osName := runtime.GOOS
+	var configPath string
+
+	if osName == "windows" {
+		configPath = path.Join(userHome, "AppData", "Local", ".zoom_deleter")
+	} else {
+		configPath = path.Join(userHome, ".zoom_deleter")
+	}
+	return configPath
 }
 
 func onReady() {
@@ -34,8 +74,11 @@ func onReady() {
 	mInfo := systray.AddMenuItem("Zoom Deleter: Active", "Zoom Deleter Active")
 	mInfo.Disable()
 
-	mTeams := systray.AddMenuItemCheckbox("Also Delete Microsoft Teams", "Also Delete Microsoft Teams", true)
-	mGoTo := systray.AddMenuItemCheckbox("Also Delete GoToMeeting", "Also Delete GoToMeeting", true)
+	configPath := GetConfigPath()
+	config := LoadConfiguration(configPath)
+
+	mTeams := systray.AddMenuItemCheckbox("Also Delete Microsoft Teams", "Also Delete Microsoft Teams", config.Teams)
+	mGoTo := systray.AddMenuItemCheckbox("Also Delete GoToMeeting", "Also Delete GoToMeeting", config.GoToMeeting)
 
 	systray.AddSeparator()
 
@@ -71,15 +114,21 @@ func onReady() {
 		case <-mGoTo.ClickedCh:
 			if mGoTo.Checked() {
 				mGoTo.Uncheck()
+				config.GoToMeeting = false
 			} else {
 				mGoTo.Check()
+				config.GoToMeeting = true
 			}
+			SaveConfiguration(configPath, config)
 		case <-mTeams.ClickedCh:
 			if mTeams.Checked() {
 				mTeams.Uncheck()
+				config.Teams = false
 			} else {
 				mTeams.Check()
+				config.Teams = true
 			}
+			SaveConfiguration(configPath, config)
 		case <-mQuitOrig.ClickedCh:
 			systray.Quit()
 			return
