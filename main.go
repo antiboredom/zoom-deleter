@@ -8,7 +8,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -38,13 +37,13 @@ func LoadConfiguration(file string) Config {
 
 func SaveConfiguration(file string, config Config) {
 	data, err := json.Marshal(config)
-  if err != nil {
-    fmt.Println(err);
-  }
+	if err != nil {
+		fmt.Println(err)
+	}
 	err = ioutil.WriteFile(file, data, 0644)
-  if err != nil {
-    fmt.Println(err)
-  }
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func GetConfigPath() string {
@@ -53,9 +52,9 @@ func GetConfigPath() string {
 	var configPath string
 
 	if osName == "windows" {
-		configPath = path.Join(userHome, "AppData", "Local", ".zoom_deleter")
+		configPath = filepath.Join(userHome, "AppData", "Local", ".zoom_deleter")
 	} else {
-		configPath = path.Join(userHome, ".zoom_deleter")
+		configPath = filepath.Join(userHome, ".zoom_deleter")
 	}
 	return configPath
 }
@@ -98,7 +97,7 @@ func onReady() {
 		case <-done:
 			return
 		case <-deleteTicker.C:
-			deleter()
+			deleter(config)
 		case <-mStart.ClickedCh:
 			if mStart.Checked() {
 				mStart.Uncheck()
@@ -136,28 +135,38 @@ func onReady() {
 	}
 }
 
-func deleter() {
+func deleter(config Config) {
 	switch osName := runtime.GOOS; osName {
 	case "darwin":
 		os.RemoveAll("/Applications/zoom.us.app")
-		os.RemoveAll("/Applications/Microsoft Teams.app")
-		goToMeetings, _ := filepath.Glob("/Applications/GoToMeeting*.app")
-		for _, goToMeeting := range goToMeetings {
-			os.RemoveAll(goToMeeting)
+
+		if config.Teams {
+			os.RemoveAll("/Applications/Microsoft Teams.app")
+		}
+
+		if config.GoToMeeting {
+			goToMeetings, _ := filepath.Glob("/Applications/GoToMeeting*.app")
+			for _, goToMeeting := range goToMeetings {
+				os.RemoveAll(goToMeeting)
+			}
 		}
 	case "linux":
 		fmt.Println("Not implemented yet for Linux!")
 	case "windows":
 		userHome, _ := homedir.Dir()
 
-		zoomPath := path.Join(userHome, "AppData\\Roaming\\Zoom")
+		zoomPath := filepath.Join(userHome, "AppData\\Roaming\\Zoom")
 		os.RemoveAll(zoomPath)
 		os.RemoveAll("C:\\Program Files (x86)\\Zoom")
 
-		goToMeetingPath := path.Join(userHome, "AppData\\Local\\GoToMeeting")
-		os.RemoveAll(goToMeetingPath)
+		if config.GoToMeeting {
+			goToMeetingPath := filepath.Join(userHome, "AppData\\Local\\GoToMeeting")
+			os.RemoveAll(goToMeetingPath)
+		}
 
-		teamsPath := path.Join(userHome, "AppData\\Local\\Microsoft\\Teams")
-		os.RemoveAll(teamsPath)
+		if config.Teams {
+			teamsPath := filepath.Join(userHome, "AppData\\Local\\Microsoft\\Teams")
+			os.RemoveAll(teamsPath)
+		}
 	}
 }
